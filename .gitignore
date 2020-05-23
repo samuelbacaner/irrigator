@@ -1,8 +1,8 @@
 .DS_Store
 .vscode/.pyenv
 .vscode/.ropeproject
-#.vscode/settings.json # uncomment this
-#.vscode/local.env  # uncomment this
+.vscode/settings.json # uncomment this
+.vscode/local.env  # uncomment this
 *.local.env
 */.ipynb_checkpoints
 *.pyc
