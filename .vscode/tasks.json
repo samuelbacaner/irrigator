@@ -1,0 +1,115 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Refresh gcloud token",
+            "type": "shell",
+            "command": "gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://us.gcr.io",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BASH_ENV": "${workspaceFolder}/.vscode/local.env"
+                }
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Install Pip Deps",
+            "type": "shell",
+            "command": "python -m pip install --user -r requirements.txt",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BASH_ENV": "${workspaceFolder}/.vscode/local.env"
+                }
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Build Image",
+            "dependsOn": [
+                "Refresh gcloud token"
+            ],
+            "type": "shell",
+            "command": "docker build --pull --rm -f run.Dockerfile -t $RUN_IMAGE_NAME .",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BASH_ENV": "${workspaceFolder}/.vscode/local.env"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Run Tests",
+            "dependsOn": [
+                "Refresh gcloud token"
+            ],
+            "type": "shell",
+            "command": "docker build --pull --rm -f test.Dockerfile -t $TEST_IMAGE_NAME . && docker run --rm $TEST_IMAGE_NAME",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BASH_ENV": "${workspaceFolder}/.vscode/local.env"
+                }
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Run App",
+            "dependsOn": [
+                "Build Services"
+            ],
+            "type": "shell",
+            "command": "docker-compose -f docker-compose.yml up",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BASH_ENV": "${workspaceFolder}/.vscode/local.env"
+                }
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Run Local Cloud Build",
+            "dependsOn": [
+                "Refresh gcloud token"
+            ],
+            "type": "shell",
+            "command": "cloud-build-local --substitutions=_GCR_HOSTNAME=us.gcr.io,BRANCH_NAME=local-branch --dryrun=false --push=false .",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "BASH_ENV": "${workspaceFolder}/.vscode/local.env"
+                }
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "panel": "shared"
+            }
+        }
+    ]
+}
