@@ -86,6 +86,10 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
 #     && python3 setup.py install \
 #     && rm -r /tmp/device_calibration_install
 
+COPY requirements.txt /tmp/pip-tmp/
+RUN pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
+    && rm -rf /tmp/pip-tmp
+
 USER $USERNAME
 
 # Switch back to dialog for any ad-hoc use of apt-get
