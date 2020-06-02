@@ -14,6 +14,9 @@ class MoistureSensor:
         mcp = MCP.MCP3008(spi, cs)
         self.channel = AnalogIn(mcp, MCP.P0)
 
-    def probe(self):
-        print('Raw ADC Value: ', self.channel.value)
-        print('ADC Voltage: ' + str(self.channel.voltage) + 'V')
+    def probe(self) -> tuple:
+        raw_value = self.channel.value
+        voltage = self.channel.voltage
+        print('Raw ADC Value: ', raw_value)
+        print('ADC Voltage: ' + str(voltage) + 'V')
+        return raw_value, voltage

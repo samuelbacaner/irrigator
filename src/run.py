@@ -4,11 +4,17 @@ from flask import Flask
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from src.hardware.moisture_sensor import MoistureSensor
+from src.models import MoistureReading
+from src.storage import write_moisture_reading
+
+# TODO add layered config store that uses env variables and a persisted config file
 
 
 def check_moisture():
     print("checking moisture on timer")
-    moisture_sensor.probe()
+    raw_value, voltage = moisture_sensor.probe()
+    moisture_reading = MoistureReading(raw_value, voltage)
+    write_moisture_reading(moisture_reading)
 
 
 moisture_sensor = MoistureSensor()
@@ -20,7 +26,6 @@ scheduler.start()
 app = Flask(__name__)
 
 
-
 @app.route("/")
 def hello():
     return "Hello!\n"
@@ -28,7 +33,7 @@ def hello():
 
 @app.route("/moisture")
 def moisture():
-    moisture_sensor.probe()
+    _, _ = moisture_sensor.probe()
     return 200
 
 
